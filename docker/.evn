@@ -1,0 +1,13 @@
+# Ports
+KEYCLOAK_PORT=9090
+POSTGRES_MAIN_PORT=5433
+POSTGRES_KEYCLOAK_PORT=9433
+
+# Datenbank-Konfiguration
+POSTGRES_USER=postgres_user
+POSTGRES_PASSWORD=postgres_pass
+POSTGRES_MAIN_DB=postgresdb
+
+# Keycloak Admin
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=admin

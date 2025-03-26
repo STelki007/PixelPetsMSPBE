@@ -1,4 +1,4 @@
-
+version: '3.8'
 
 volumes:
   keycloak_data:
@@ -18,13 +18,13 @@ services:
       KC_DB: postgres
       KC_DB_URL_HOST: keycloakdb_svr
       KC_DB_URL_DATABASE: keycloakdb
-      KC_DB_PASSWORD: postgres_pass
-      KC_DB_USERNAME: postgres_user
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_SCHEMA: public
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
-      - "9090:8080"
+      - "${KEYCLOAK_PORT}:8080"
     depends_on:
       keycloakdb_svr:
         condition: service_healthy
@@ -35,22 +35,28 @@ services:
       - postgres_data_keycloak_db:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloakdb
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: "exit 0"
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d keycloakdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
-      - "9433:5432"
+      - "${POSTGRES_KEYCLOAK_PORT}:5432"
 
   postgres_db:
     image: postgres:16.4
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: postgresdb
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: ${POSTGRES_MAIN_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: "exit 0"
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_MAIN_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
-      - "5432:5432"
+      - "${POSTGRES_MAIN_PORT}:5432"
